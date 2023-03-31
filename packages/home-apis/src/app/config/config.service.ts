@@ -52,6 +52,7 @@ export class ConfigService {
   private parseDbConfigFromEnv(env: NodeJS.ProcessEnv, defaultConfig: Readonly<ConfigDBData>): ConfigDBData {
     return {
       url: env.DATABASE_URL || defaultConfig.url,
+      ssl: false,
     };
   }
 

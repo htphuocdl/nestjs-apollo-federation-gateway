@@ -1,0 +1,70 @@
+version: "3"
+services:
+  postgres-db:
+    image: postgres:12-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=api
+      - POSTGRES_PASSWORD=development_pass
+      - POSTGRES_MULTIPLE_DATABASES="home-manager-api","home-manager-api-testing"
+    volumes:
+      - ./docker-utils:/docker-entrypoint-initdb.d
+      - postgres_db:/data/postgres
+    ports:
+      - 5433:5432
+  gateway-service-dev:
+    image: gateway-service-dev
+    container_name: gateway-service-dev
+    environment:
+      - DATABASE_URL=postgres://api:development_pass@postgres-db:5432/home-manager-api
+      - PORT=3000
+      - SECRET_KEY=test
+    build:
+      context: ./packages/gateway-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - "./packages/gateway-service:/home/app"
+    ports:
+      - 3816:3000
+    command: -f /dev/null
+    entrypoint: /usr/bin/tail
+    tty: true
+  auth-service-dev:
+    image: auth-service-dev
+    container_name: auth-service-dev
+    environment:
+      - DATABASE_URL=postgres://api:development_pass@postgres-db:5432/home-manager-api
+      - PORT=3000
+      - JWT_SECRET=test
+      - NODE_ENV=local
+    build:
+      context: ./packages/auth-service
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3817:3000
+    volumes:
+      - "./packages/auth-service:/home/app"
+    command: -f /dev/null
+    entrypoint: /usr/bin/tail
+    tty: true
+  home-apis-dev:
+    image: home-apis-dev
+    container_name: home-apis-dev
+    environment:
+      - DATABASE_URL=postgres://api:development_pass@postgres-db:5432/home-manager-api
+      - NODE_ENV=local
+      - PORT=3000
+      - JWT_SECRET=test
+    build:
+      context: ./packages/home-apis
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3818:3000
+    volumes:
+      - "./packages/home-apis:/home/app"
+    command: -f /dev/null
+    entrypoint: /usr/bin/tail
+    tty: true
+volumes:
+  postgres_db:
+    driver: local

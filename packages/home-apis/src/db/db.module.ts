@@ -26,14 +26,15 @@ export class DbModule {
   }
 
   private static getConnectionOptionsPostgres(dbdata: ConfigDBData): TypeOrmModuleOptions {
-    return {
+    const option: TypeOrmModuleOptions = {
       type: 'postgres',
       url: dbdata.url,
       keepConnectionAlive: true,
       ssl: (process.env.NODE_ENV !== 'local' && process.env.NODE_ENV !== 'test')
         ? { rejectUnauthorized: false }
         : false,
-    };
+    }
+    return option;
   }
 
   public static forRoot(dbconfig: DbConfig): DynamicModule {

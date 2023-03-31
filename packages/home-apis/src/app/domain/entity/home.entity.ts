@@ -10,7 +10,6 @@ export class Home extends BaseEntity {
   @Column({ type: 'uuid' })
   public user_id!: string;
 
-
   @Column('varchar')
   public description!: string;
 

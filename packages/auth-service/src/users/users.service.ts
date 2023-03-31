@@ -300,8 +300,8 @@ export class UsersService {
    * @returns {Promise<UserEntity[]>}
    * @memberof UsersService
    */
-  async getAllUsers(): Promise<UserEntity[]> {
-    const users = await this.userRepo.find({});
+  async getAllUsers(...argv): Promise<UserEntity[]> {
+    const users = await this.userRepo.find(...argv);
     return users;
   }
 

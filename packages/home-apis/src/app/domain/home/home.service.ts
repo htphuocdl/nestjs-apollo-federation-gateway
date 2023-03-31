@@ -39,19 +39,19 @@ export class HomeService {
   }
 
   async listAll() {
-    return await this.homeRepository.find({ relations: ['locality', 'facilities'] });
+    return await this.homeRepository.find({});
   }
 
   async findHome(name: string) {
-    return await this.homeRepository.find({ where: { name: ILike(`%${name}%`) }, relations: ['locality', 'facilities'] });
+    return await this.homeRepository.find({ where: { name: ILike(`%${name}%`) }, });
   }
 
   async listAllActiveHomes() {
-    return await this.homeRepository.find({ where: { is_active: true }, relations: ['locality', 'facilities'] });
+    return await this.homeRepository.find({ where: { is_active: true }, });
   }
 
   async getById(id: string) {
-    return await this.homeRepository.findOne({ where: { id, is_active: true }, relations: ['locality', 'facilities'] });
+    return await this.homeRepository.findOne({ where: { id, is_active: true }, });
   }
 
   async getByHomeName(name: string) {

@@ -29,6 +29,7 @@ export class AuthResolver {
   @Query('refreshToken')
   @UseGuards(JwtAuthGuard)
   async refreshToken(@Context('req') request: any): Promise<string> {
+    console.log("🚀 ~ file: auth.resolvers.ts:32 ~ AuthResolver ~ refreshToken ~ request:", request)
     const user: UserEntity = request.user;
     if (!user)
       throw new AuthenticationError(

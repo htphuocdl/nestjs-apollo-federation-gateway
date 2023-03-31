@@ -6,6 +6,7 @@ export const DEFAULT_CONFIG: ConfigData = {
   env: 'development',
   db: {
     url: process.env.DATABASE_URL,
+    ssl: false,
   },
   sendGrid: {
     apiKey: '',
@@ -19,3 +20,4 @@ export const DEFAULT_CONFIG: ConfigData = {
   logLevel: 'info',
   newRelicKey: '',
 };
+console.log("🚀 ~ file: config.default.ts:22 ~ DEFAULT_CONFIG:", DEFAULT_CONFIG)
