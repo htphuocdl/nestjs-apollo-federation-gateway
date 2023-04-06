@@ -22,4 +22,4 @@ RUN npm run --production
 
 EXPOSE 3000 3000
 
-ENTRYPOINT node dist/main
+ENTRYPOINT npm run start:prod

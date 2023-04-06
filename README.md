@@ -11,7 +11,7 @@ docker-compose up -d
 - [Home Gateway](http://localhost:3818/graphql)
 ## Develop
 ```
-docker-compose -f docker-compose-dev.yml up -d
+docker-compose -f docker-compose-dev.yml --env-file .env.example up -d
 ```
 - [Apollo Gateway](http://localhost:3816/graphql)
 - [Auth Service](http://localhost:3817/graphql)

@@ -18,6 +18,9 @@ services:
     environment:
       - PORT=3000
       - SECRET_KEY=test
+    depends_on:
+      - auth-service
+      - home-apis
     build:
       context: ./packages/gateway-service
       dockerfile: Dockerfile
@@ -31,6 +34,8 @@ services:
       - PORT=3000
       - JWT_SECRET=test
       - NODE_ENV=local
+    depends_on:
+      - postgres-db
     build:
       context: ./packages/auth-service
       dockerfile: Dockerfile
@@ -44,6 +49,8 @@ services:
       - NODE_ENV=local
       - PORT=3000
       - JWT_SECRET=test
+    depends_on:
+      - postgres-db
     build:
       context: ./packages/home-apis
       dockerfile: Dockerfile

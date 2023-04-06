@@ -4,21 +4,28 @@ services:
     image: postgres:12-alpine
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=api
-      - POSTGRES_PASSWORD=development_pass
-      - POSTGRES_MULTIPLE_DATABASES="home-manager-api","home-manager-api-testing"
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=api
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_MULTIPLE_DATABASES=auth,postgres:home,postgres #{dbname}:{user}
+    env_file:
+      - .env.example
     volumes:
-      - ./docker-utils:/docker-entrypoint-initdb.d
-      - postgres_db:/data/postgres
+      - ./postgres_db/dbdata:/var/lib/postgresql/data
+      - ./postgres_db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - 5433:5432
   gateway-service-dev:
     image: gateway-service-dev
     container_name: gateway-service-dev
     environment:
-      - DATABASE_URL=postgres://api:development_pass@postgres-db:5432/home-manager-api
       - PORT=3000
       - SECRET_KEY=test
+    env_file:
+      - .env.example
+    depends_on:
+      - auth-service-dev
+      - home-apis-dev
     build:
       context: ./packages/gateway-service
       dockerfile: Dockerfile.dev
@@ -33,13 +40,17 @@ services:
     image: auth-service-dev
     container_name: auth-service-dev
     environment:
-      - DATABASE_URL=postgres://api:development_pass@postgres-db:5432/home-manager-api
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres-db:5432/home
       - PORT=3000
       - JWT_SECRET=test
       - NODE_ENV=local
+    env_file:
+      - .env.example
     build:
       context: ./packages/auth-service
       dockerfile: Dockerfile.dev
+    depends_on:
+      - postgres-db
     ports:
       - 3817:3000
     volumes:
@@ -51,13 +62,17 @@ services:
     image: home-apis-dev
     container_name: home-apis-dev
     environment:
-      - DATABASE_URL=postgres://api:development_pass@postgres-db:5432/home-manager-api
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres-db:5432/auth
       - NODE_ENV=local
       - PORT=3000
       - JWT_SECRET=test
+    env_file:
+      - .env.example
     build:
       context: ./packages/home-apis
       dockerfile: Dockerfile.dev
+    depends_on:
+      - postgres-db
     ports:
       - 3818:3000
     volumes:
@@ -66,5 +81,4 @@ services:
     entrypoint: /usr/bin/tail
     tty: true
 volumes:
-  postgres_db:
-    driver: local
+  postgres_db: #

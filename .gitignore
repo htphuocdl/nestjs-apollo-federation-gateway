@@ -122,3 +122,6 @@ dist
 build
 dist
 *.zip
+
+#db
+postgres_db/dbdata
