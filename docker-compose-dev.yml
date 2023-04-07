@@ -15,28 +15,32 @@ services:
       - ./postgres_db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - 5433:5432
-  gateway-service:
-    image: gateway-service
-    container_name: gateway-service
+  gateway-service-dev:
+    image: gateway-service-dev
+    container_name: gateway-service-dev
     environment:
       - PORT=3000
       - SECRET_KEY=test
     env_file:
       - .env.example
     depends_on:
-      - auth-service
-      - home-apis
+      - auth-service-dev
+      - home-apis-dev
     build:
       context: ./packages/gateway-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
+    volumes:
+      - "./packages/gateway-service:/home/app"
     ports:
       - 3816:3000
-
-  auth-service:
-    image: auth-service
-    container_name: auth-service
+    command: -f /dev/null
+    entrypoint: /usr/bin/tail
+    tty: true
+  auth-service-dev:
+    image: auth-service-dev
+    container_name: auth-service-dev
     environment:
-      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres-db:5432/auth
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres-db:5432/home
       - PORT=3000
       - JWT_SECRET=test
       - NODE_ENV=local
@@ -44,17 +48,21 @@ services:
       - .env.example
     build:
       context: ./packages/auth-service
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       - postgres-db
     ports:
       - 3817:3000
-
-  home-apis:
-    image: home-apis
-    container_name: home-apis
+    volumes:
+      - "./packages/auth-service:/home/app"
+    command: -f /dev/null
+    entrypoint: /usr/bin/tail
+    tty: true
+  home-apis-dev:
+    image: home-apis-dev
+    container_name: home-apis-dev
     environment:
-      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres-db:5432/home
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres-db:5432/auth
       - NODE_ENV=local
       - PORT=3000
       - JWT_SECRET=test
@@ -62,11 +70,15 @@ services:
       - .env.example
     build:
       context: ./packages/home-apis
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     depends_on:
       - postgres-db
     ports:
       - 3818:3000
-
+    volumes:
+      - "./packages/home-apis:/home/app"
+    command: -f /dev/null
+    entrypoint: /usr/bin/tail
+    tty: true
 volumes:
   postgres_db: #

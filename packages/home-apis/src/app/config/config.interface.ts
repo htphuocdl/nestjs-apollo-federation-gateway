@@ -3,6 +3,7 @@
  */
 export interface ConfigDBData {
   url?: string;
+  ssl?: boolean;
 }
 
 export interface AuthConfig {

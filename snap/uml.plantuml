@@ -1,0 +1,33 @@
+@startuml
+
+cloud {
+    frame "Internal services" {
+        [Dashboard Service]
+        [Organization Service]
+        [Authorization Service]
+        [Account Service]
+    }
+    
+    [Dashboard Service] <--> [Apollo GW internal]
+    [Organization Service] <--> [Apollo GW internal]
+    [Authorization Service] <-- [Apollo GW internal]
+    [Account Service] <--> [Apollo GW internal]
+
+    [Dashboard Service] <--> [Apollo GW external]
+    [Organization Service] <--> [Apollo GW external]
+    [Authorization Service] <-- [Apollo GW external]
+    [Account Service] <--> [Apollo GW external]
+}
+
+cloud {
+    [Third party]
+}
+[Apollo GW external] <-- [Third party]: RESTful
+
+package "End Users" {
+    actor WMC
+    actor IOS
+    actor Android
+}
+[Apollo GW internal] <-- "End Users": POST /graphQL
+@enduml

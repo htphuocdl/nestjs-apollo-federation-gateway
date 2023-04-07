@@ -1,7 +1,7 @@
 import { AdminGuard } from '@app/auth/guards/admin.guard';
 import { JwtAuthGuard } from '@app/auth/guards/jwt-auth.guard';
 import { Logger } from '@logger/logger';
-import { ConsoleLogger, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Args, Mutation, Parent, ResolveField, Context, ResolveReference } from '@nestjs/graphql';
 import { FileUpload, GraphQLUpload } from 'graphql-upload';
 import { Home } from '../entity/home.entity';
@@ -31,15 +31,6 @@ export class HomeResolver {
     return await this.homeService.listAllActiveHomes();
   }
 
-  /*
-  ! we are stuck here no solution available 
-curl http://localhost:5002/graphql \
-  -F operations='{ "query": "mutation ($file: Upload!) { uploadHomePhoto(file: $file) { count } }", "variables": { "file": null } }' \
-  -F map='{ "0": ["variables.file"] }' \
-  -F 0=@mocha.png
-
-  {"correlationId":"da2434d3-8690-448e-8548-3117c860bb61","level":"error","message":"[Fri May 27 13:30:52 2022] [error] Missing multipart field ‘operations’ (https://github.com/jaydenseric/graphql-multipart-request-spec)."}
-  */
   @Mutation()
   async uploadHomePhoto(
     @Args('file', { type: () => GraphQLUpload }) file: FileUpload,

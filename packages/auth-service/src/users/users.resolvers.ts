@@ -18,8 +18,10 @@ export class UserResolver {
 
   @Query('users')
   @UseGuards(JwtAuthGuard, AdminGuard)
-  async users(): Promise<UserEntity[]> {
-    return await this.usersService.getAllUsers();
+  async users(@Args('permission') permission: string): Promise<UserEntity[]> {
+    return await this.usersService.getAllUsers({
+      permission,
+    });
   }
 
   // A NotFoundException is intentionally not sent so bots can't search for emails

@@ -8,7 +8,7 @@ import * as helmet from 'helmet';
 import { AppModule } from './app/app.module';
 
 import { Logger } from './logger/logger';
-const LISTEN_PORT = 3005;
+const LISTEN_PORT = 3000;
 
 const NEST_LOGGING = true;
 async function bootstrap() {

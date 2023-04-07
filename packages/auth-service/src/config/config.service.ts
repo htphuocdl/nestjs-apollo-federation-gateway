@@ -36,6 +36,8 @@ export class ConfigService {
   }
 
   private parseAuthConfigFromEnv(env: NodeJS.ProcessEnv): AuthConfig {
+    console.log("🚀 ~ file: config.service.ts:39 ~ ConfigService ~ parseAuthConfigFromEnv ~ env:", env)
+    console.log("🚀 ~ file: config.service.ts:39 ~ ConfigService ~ parseAuthConfigFromEnv ~ process.env:", process.env)
     return {
       jwtSecret: env.JWT_SECRET || '',
       expireIn: Number(env.JWT_EXPIRE_IN) || 268000

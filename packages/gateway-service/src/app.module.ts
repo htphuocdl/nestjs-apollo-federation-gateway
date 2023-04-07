@@ -1,7 +1,6 @@
 import { RemoteGraphQLDataSource } from '@apollo/gateway';
 import {
   Module,
-  BadRequestException,
   HttpStatus,
   HttpException,
   UnauthorizedException,
@@ -10,7 +9,7 @@ import {
 import { IntrospectAndCompose } from '@apollo/gateway';
 import { ApolloGatewayDriver, ApolloGatewayDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule } from '@nestjs/graphql';
-import { verify, decode } from 'jsonwebtoken';
+import { verify } from 'jsonwebtoken';
 import { INVALID_AUTH_TOKEN, INVALID_BEARER_TOKEN } from './app.constants';
 import { graphqlUploadExpress } from 'graphql-upload';
 
@@ -41,7 +40,9 @@ const handleAuth = ({ req }) => {
   try {
     if (req.headers.authorization) {
       const token = getToken(req.headers.authorization);
+      console.log("🚀 ~ file: app.module.ts:44 ~ handleAuth ~ token:", token)
       const decoded: any = decodeToken(token);
+      console.log("🚀 ~ file: app.module.ts:46 ~ handleAuth ~ decoded:", decoded)
       return {
         userId: decoded.userId,
         permissions: decoded.permissions,
@@ -75,9 +76,8 @@ const handleAuth = ({ req }) => {
         },
         supergraphSdl: new IntrospectAndCompose({
           subgraphs: [
-            { name: 'User', url: 'http://localhost:5006/graphql' },
-            { name: 'Home', url: 'http://localhost:5003/graphql' },
-            { name: 'Booking', url: 'http://localhost:5004/graphql' },
+            { name: 'User', url: 'http://host.docker.internal:3817/graphql' },
+            { name: 'Home', url: 'http://host.docker.internal:3818/graphql' },
           ],
         }),
       },
