@@ -4,7 +4,7 @@
 # Quick start
 ## Deploy
 ```
-docker-compose up -d
+docker-compose --env-file .env.example up -d
 ```
 - [Apollo Gateway](http://localhost:3816/graphql)
 - [Auth Service](http://localhost:3817/graphql)

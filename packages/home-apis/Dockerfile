@@ -7,7 +7,7 @@ RUN npm -v
 RUN node -v
 
 COPY ./ ./
-RUN npm install
+RUN npm install --force
 RUN npm run build
 
 FROM node:18.15.0-alpine3.17
@@ -18,7 +18,8 @@ WORKDIR $CONTAINER_PATH
 # copy from build image
 COPY --from=BUILD_IMAGE /home/app/dist ./dist
 COPY --from=BUILD_IMAGE /home/app/package.json ./package.json
-RUN npm run --production
+COPY --from=BUILD_IMAGE /home/app/src/app/domain/home/home.graphql ./graphql/home.graphql
+RUN npm install --omit=dev --force
 
 EXPOSE 3000 3000
 

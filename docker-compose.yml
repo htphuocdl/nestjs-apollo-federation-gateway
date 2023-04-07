@@ -4,12 +4,15 @@ services:
     image: postgres:12-alpine
     restart: unless-stopped
     environment:
-      - POSTGRES_USER=api
-      - POSTGRES_PASSWORD=development_pass
-      - POSTGRES_MULTIPLE_DATABASES=home,auth
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=api
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_MULTIPLE_DATABASES=auth,postgres:home,postgres #{dbname}:{user}
+    env_file:
+      - .env.example
     volumes:
-      - ./docker-utils:/docker-entrypoint-initdb.d
-      - postgres_db:/data/postgres
+      - ./postgres_db/dbdata:/var/lib/postgresql/data
+      - ./postgres_db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - 5433:5432
   gateway-service:
@@ -18,6 +21,8 @@ services:
     environment:
       - PORT=3000
       - SECRET_KEY=test
+    env_file:
+      - .env.example
     depends_on:
       - auth-service
       - home-apis
@@ -26,36 +31,42 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3816:3000
+
   auth-service:
     image: auth-service
     container_name: auth-service
     environment:
-      - DATABASE_URL=postgres://api:development_pass@postgres-db:5432/auth
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres-db:5432/auth
       - PORT=3000
       - JWT_SECRET=test
       - NODE_ENV=local
-    depends_on:
-      - postgres-db
+    env_file:
+      - .env.example
     build:
       context: ./packages/auth-service
       dockerfile: Dockerfile
+    depends_on:
+      - postgres-db
     ports:
       - 3817:3000
+
   home-apis:
     image: home-apis
     container_name: home-apis
     environment:
-      - DATABASE_URL=postgres://api:development_pass@postgres-db:5432/home
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@postgres-db:5432/home
       - NODE_ENV=local
       - PORT=3000
       - JWT_SECRET=test
-    depends_on:
-      - postgres-db
+    env_file:
+      - .env.example
     build:
       context: ./packages/home-apis
       dockerfile: Dockerfile
+    depends_on:
+      - postgres-db
     ports:
       - 3818:3000
+
 volumes:
-  postgres_db:
-    driver: local
+  postgres_db: #
